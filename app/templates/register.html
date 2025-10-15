@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+  <h2>Register</h2>
+  <form method="post" action="{{ url_for('web.register') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" placeholder="you@example.com" required>
+
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" placeholder="••••••••" required>
+
+    <button type="submit" class="btn">Register</button>
+  </form>
+
+  <p class="auth-link">Already have an account? <a href="{{ url_for('web.login') }}">Login</a></p>
+</section>
+{% endblock %}

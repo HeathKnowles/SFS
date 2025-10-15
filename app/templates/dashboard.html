@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+  <section class="card upload-card">
+    <h2>Upload a File</h2>
+    <form id="uploadForm" method="post" enctype="multipart/form-data" action="/api/upload">
+      <label for="file">Choose file</label>
+      <input type="file" name="file" id="file" required>
+      <button type="submit" class="btn">Upload</button>
+    </form>
+    <p><a href="{{ url_for('web.logout') }}" class="link-logout">Logout</a></p>
+  </section>
+
+  <section class="card files-card">
+    <h2>Your Files</h2>
+    {% if files %}
+      <ul class="file-list">
+      {% for f in files %}
+        <li class="file-item">
+          <span class="file-name">{{ f.filename }}</span>
+          <span class="file-meta">({{ f.size }} bytes) — status: {{ f.scan_status }}</span>
+          <span class="file-actions">
+            <a href="#" data-id="{{ f.id }}" class="btn-action download">Download</a>
+            <a href="#" data-id="{{ f.id }}" class="btn-action share">Share</a>
+            <a href="#" data-id="{{ f.id }}" class="btn-action delete">Delete</a>
+          </span>
+          {% if shares and shares.get(f.id) %}
+            <div class="file-shares">
+              <strong>Shares:</strong>
+              <ul>
+              {% for s in shares.get(f.id) %}
+                <li>
+                  <a href="/s/{{ s.token }}" target="_blank">/s/{{ s.token }}</a>
+                  {% if s.expires_at %}<small>expires {{ s.expires_at }}</small>{% endif %}
+                  <button data-token="{{ s.token }}" class="btn-action revoke">Revoke</button>
+                </li>
+              {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+        </li>
+      {% endfor %}
+      </ul>
+    {% else %}
+      <p>No files yet.</p>
+    {% endif %}
+  </section>
+
+</div>
+
+<script>
+function getCookie(name) {
+  const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+  return v ? v.pop() : '';
+}
+
+async function ensureCsrf() {
+  let csrf = getCookie('csrf_token') || '';
+  if (!csrf) {
+    try {
+      const t = await fetch('/api/csrf-token');
+      const jt = await t.json();
+      csrf = jt.csrf_token;
+    } catch (err) {
+      console.warn('Could not fetch CSRF token', err);
+    }
+  }
+  return csrf;
+}
+
+document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const form = e.target;
+  const data = new FormData(form);
+  let csrf = getCookie('csrf_token') || '';
+  if (!csrf) {
+    try {
+      const t = await fetch('/api/csrf-token');
+      const jt = await t.json();
+      csrf = jt.csrf_token;
+    } catch (err) {
+      console.warn('Could not fetch CSRF token', err);
+    }
+  }
+  const res = await fetch(form.action, { method: 'POST', body: data, headers: { 'X-CSRFToken': csrf } });
+  const json = await res.json();
+  if (res.ok) {
+    const list = document.querySelector('.file-list') || (() => {
+      const ul = document.createElement('ul');
+      ul.classList.add('file-list');
+      document.querySelector('.files-card h2').insertAdjacentElement('afterend', ul);
+      return ul;
+    })();
+    const li = document.createElement('li');
+    li.classList.add('file-item');
+    li.innerHTML = `
+      <span class="file-name">${json.filename}</span>
+      <span class="file-meta">(${json.size || 'unknown'} bytes) — status: ${json.scan_status}</span>
+      <span class="file-actions">
+        <a href="#" data-id="${json.id}" class="btn-action download">Download</a>
+        <a href="#" data-id="${json.id}" class="btn-action share">Share</a>
+        <a href="#" data-id="${json.id}" class="btn-action delete">Delete</a>
+      </span>`;
+    list.prepend(li);
+    attachFileHandlers(li);
+    alert('Upload successful');
+  } else {
+    alert(JSON.stringify(json));
+  }
+});
+
+function attachFileHandlers(root) {
+  root.querySelectorAll('.download').forEach(a => {
+    a.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const id = a.dataset.id;
+      try {
+        const res = await fetch(`/api/files/${id}`);
+        if (!res.ok) throw new Error('Download failed');
+        const j = await res.json();
+        if (j.url) window.open(j.url, '_blank');
+        else alert('No download URL available');
+      } catch (err) {
+        alert('Download error: ' + err.message);
+      }
+    });
+  });
+
+  root.querySelectorAll('.delete').forEach(a => {
+    a.addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (!confirm('Delete this file?')) return;
+      const id = a.dataset.id;
+      try {
+        const csrf = await ensureCsrf();
+        const res = await fetch(`/api/files/${id}`, { method: 'DELETE', headers: { 'X-CSRFToken': csrf } });
+        if (!res.ok) {
+          const j = await res.json().catch(() => ({}));
+          throw new Error(j.error || 'Delete failed');
+        }
+        a.closest('li').remove();
+      } catch (err) {
+        alert('Delete error: ' + err.message);
+      }
+    });
+  });
+
+  root.querySelectorAll('.share').forEach(a => {
+    a.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const id = a.dataset.id;
+      const expires = prompt('Share expires in seconds (leave blank for no expiry):', '3600');
+      const maxUses = prompt('Max uses (leave blank for unlimited):', '');
+      const body = {};
+      if (expires) body.expires_in = parseInt(expires, 10);
+      if (maxUses) body.max_uses = parseInt(maxUses, 10);
+      try {
+        const csrf = await ensureCsrf();
+        const res = await fetch(`/api/files/${id}/share`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf }, body: JSON.stringify(body) });
+        const j = await res.json();
+        if (!res.ok) throw new Error(j.error || JSON.stringify(j));
+        // show share UI
+        const container = document.createElement('div');
+        container.className = 'share-box';
+        container.innerHTML = `<input type="text" readonly value="${location.origin}${j.share_url}" class="share-link" /><button class="btn copy">Copy</button>`;
+        a.closest('.file-item').appendChild(container);
+        container.querySelector('.copy').addEventListener('click', () => {
+          navigator.clipboard.writeText(container.querySelector('.share-link').value);
+          alert('Copied to clipboard');
+        });
+      } catch (err) {
+        alert('Share error: ' + err.message);
+      }
+    });
+  });
+
+  // share revoke handlers
+  root.querySelectorAll('.revoke').forEach(b => {
+    b.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const token = b.dataset.token;
+      if (!confirm('Revoke this share?')) return;
+      try {
+        const csrf = await ensureCsrf();
+        const res = await fetch(`/api/shares/${token}`, { method: 'DELETE', headers: { 'X-CSRFToken': csrf } });
+        if (!res.ok) {
+          const j = await res.json().catch(() => ({}));
+          throw new Error(j.error || 'Revoke failed');
+        }
+        b.closest('li').remove();
+      } catch (err) {
+        alert('Revoke error: ' + err.message);
+      }
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.file-item').forEach(li => attachFileHandlers(li));
+});
+</script>
+{% endblock %}

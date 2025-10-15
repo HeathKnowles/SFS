@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, LargeBinary, Text
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from . import Base
+from ..extensions import Base
 
 
 class User(Base):
@@ -54,3 +54,30 @@ class AuditLog(Base):
 
     def __repr__(self):
         return f"<Audit {self.action} user={self.user_id} obj={self.object_type}:{self.object_id}>"
+
+
+class FileShare(Base):
+    __tablename__ = 'file_shares'
+
+    id = Column(Integer, primary_key=True)
+    file_id = Column(Integer, ForeignKey('files.id'), nullable=False, index=True)
+    token = Column(String(128), unique=True, nullable=False, index=True)
+    created_by = Column(Integer, ForeignKey('users.id'), nullable=False)
+    expires_at = Column(DateTime, nullable=True)
+    max_uses = Column(Integer, nullable=True)
+    uses = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    file = relationship('File')
+    creator = relationship('User')
+
+    def is_active(self):
+        from datetime import datetime
+        if self.expires_at and datetime.utcnow() > self.expires_at:
+            return False
+        if self.max_uses is not None and self.uses >= self.max_uses:
+            return False
+        return True
+
+    def __repr__(self):
+        return f"<FileShare token={self.token} file={self.file_id} active={self.is_active()}>"

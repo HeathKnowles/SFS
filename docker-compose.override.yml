@@ -1,0 +1,14 @@
+version: '3.8'
+
+# Development overrides: point S3 endpoint at local MinIO and expose extra mounts
+services:
+  web:
+    environment:
+      CLOUDFLARE_S3_ENDPOINT: "http://minio:9000"
+      CLOUDFLARE_R2_BUCKET: "sfs"
+      CLOUDFLARE_ACCESS_KEY_ID: "minioadmin"
+      CLOUDFLARE_SECRET_ACCESS_KEY: "minioadmin"
+    ports:
+      - '5000:5000'
+    stdin_open: true
+    tty: true

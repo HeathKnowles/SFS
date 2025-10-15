@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}SFS{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+
+  <body>
+    <a href="#content" class="skip-link">Skip to content</a>
+
+    <header class="site-header" role="banner">
+      <div class="container header-inner">
+        <div class="brand" aria-label="Site brand">
+          <span class="brand-mark" aria-hidden="true">🛡️</span>
+          <span class="brand-name">SFS</span>
+        </div>
+        <nav aria-label="Primary">
+          <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/upload">Upload</a></li>
+            <li><a href="/account">Account</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="content" class="page">
+      <div class="container">
+        <header class="page-header">
+          <h1 class="page-title">{% block page_title %}SFS{% endblock %}</h1>
+          <p class="page-subtitle">A cleaner, more accessible UI with no JavaScript required.</p>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="flashes" role="status" aria-live="polite">
+              {% for m in messages %}
+                <li>{{ m }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <section class="card" aria-label="Content">
+          {% block content %}{% endblock %}
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="container footer-inner">
+        <span>© 2025 SFS</span>
+        <span>Built with care — HTML & CSS only</span>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,40 @@
+nohup: ignoring input
+ * Serving Flask app 'app'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+[33mPress CTRL+C to quit[0m
+127.0.0.1 - - [15/Oct/2025 11:55:36] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Oct/2025 11:55:36] "GET /static/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [15/Oct/2025 11:55:48] "[33mGET /api/files/4 HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Oct/2025 11:56:01] "[32mGET /s/CWUGzwAjxLWSfy5vUfs7vxWXJ22c0hLu HTTP/1.1[0m" 302 -
+127.0.0.1 - - [15/Oct/2025 11:56:17] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Oct/2025 11:56:17] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [15/Oct/2025 11:56:20] "[33mGET /upload HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Oct/2025 11:56:23] "[33mGET /account HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Oct/2025 12:02:03] "GET /login HTTP/1.1" 200 -
+127.0.0.1 - - [15/Oct/2025 12:02:03] "[33mPOST /api/files/5/share HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Oct/2025 12:02:42] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Oct/2025 12:02:42] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [15/Oct/2025 12:02:45] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Oct/2025 12:02:45] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [15/Oct/2025 12:02:45] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Oct/2025 12:02:45] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [15/Oct/2025 12:02:46] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Oct/2025 12:02:46] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [15/Oct/2025 12:02:54] "[33mDELETE /api/files/4 HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Oct/2025 12:05:03] "[31m[1mPOST /login HTTP/1.1[0m" 400 -
+127.0.0.1 - - [15/Oct/2025 12:05:03] "GET /api/csrf-token HTTP/1.1" 200 -
+127.0.0.1 - - [15/Oct/2025 12:05:03] "GET /api/csrf-token HTTP/1.1" 200 -
+127.0.0.1 - - [15/Oct/2025 12:05:03] "[33mDELETE /api/files/6 HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Oct/2025 12:07:38] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Oct/2025 12:07:38] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [15/Oct/2025 12:07:39] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Oct/2025 12:07:39] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [15/Oct/2025 12:07:42] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Oct/2025 12:07:42] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [15/Oct/2025 12:12:53] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Oct/2025 12:12:53] "GET /static/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [15/Oct/2025 12:12:53] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [15/Oct/2025 12:23:06] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [15/Oct/2025 12:23:06] "[36mGET /static/style.css HTTP/1.1[0m" 304 -

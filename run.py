@@ -1,5 +1,5 @@
-import os
-from app import create_app, Base
+from app import create_app
+from app.extensions import Base
 
 
 def init_db():

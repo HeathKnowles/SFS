@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sfs-web
+  namespace: sfs-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sfs-web
+  template:
+    metadata:
+      labels:
+        app: sfs-web
+    spec:
+      containers:
+      - name: sfs-web
+        image: sfs:dev
+        envFrom:
+        - secretRef:
+            name: sfs-dev-secrets
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - mountPath: /app/uploads
+          name: uploads
+        - mountPath: /app/quarantine
+          name: quarantine
+      volumes:
+      - name: uploads
+        hostPath:
+          path: /tmp/sfs/uploads
+          type: DirectoryOrCreate
+      - name: quarantine
+        hostPath:
+          path: /tmp/sfs/quarantine
+          type: DirectoryOrCreate
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sfs-web
+  namespace: sfs-dev
+spec:
+  selector:
+    app: sfs-web
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: NodePort

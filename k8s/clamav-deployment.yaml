@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clamav
+  namespace: sfs-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: clamav
+  template:
+    metadata:
+      labels:
+        app: clamav
+    spec:
+      containers:
+      - name: clamav
+        image: mkodockx/docker-clamav:alpine
+        ports:
+        - containerPort: 3310
+        volumeMounts:
+        - mountPath: /var/lib/clamav
+          name: clamav-db
+      volumes:
+      - name: clamav-db
+        hostPath:
+          path: /tmp/sfs/clamav-db
+          type: DirectoryOrCreate
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clamav
+  namespace: sfs-dev
+spec:
+  selector:
+    app: clamav
+  ports:
+    - protocol: TCP
+      port: 3310
+      targetPort: 3310
