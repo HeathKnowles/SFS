@@ -1,0 +1,9 @@
+Flask>=2.0
+SQLAlchemy>=1.4
+psycopg2-binary>=2.9
+alembic
+python-dotenv
+boto3
+python-magic
+argon2-cffi
+clamd
