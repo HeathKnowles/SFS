@@ -98,16 +98,6 @@ docker compose up --build
 
 Then visit `https://localhost:8000` (or the mapped port) and use the web UI.
 
-## Next steps / roadmap
-
-- Implement authentication (Argon2 + secure sessions) and account management.
-- Build file upload API with streaming, sanitization, and ClamAV scanning.
-- Wire Cloudflare R2 for storage and implement presigned download URLs.
-- Add structured audit logging and error tracking.
-- Add automated tests and GitHub Actions CI.
-
-If you'd like, I can scaffold an initial Flask project in this repo now with the proposed pieces (auth, DB models, R2 client wiring, simple upload endpoint with mocked scanning). Tell me if you want ClamAV run in the prototype or mocked and whether to use MinIO locally or call R2 directly.
-
 ---
 
 *This README is intentionally detailed to serve as both documentation and a deployment runbook.*
